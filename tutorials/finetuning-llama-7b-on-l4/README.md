@@ -38,13 +38,14 @@ export PROJECT_ID=$(gcloud config get project)
 export REGION=us-central1
 export BUCKET_NAME=${PROJECT_ID}-llama-l4
 export SERVICE_ACCOUNT="l4-demo@${PROJECT_ID}.iam.gserviceaccount.com"
+export CLUSTER_NAME=l4-demo
 ```
 
 > Note: You might have to rerun the export commands if for some reason you reset your shell and the variables are no longer set. This can happen for example when your Cloud Shell disconnects.
 
 Create the GKE cluster by running:
 ```bash
-gcloud container clusters create l4-demo --location ${REGION} \
+gcloud container clusters create $CLUSTER_NAME --location ${REGION} \
   --workload-pool ${PROJECT_ID}.svc.id.goog \
   --enable-image-streaming --enable-shielded-nodes \
   --shielded-secure-boot --shielded-integrity-monitoring \
@@ -64,7 +65,7 @@ gcloud container clusters create l4-demo --location ${REGION} \
 Let’s create a nodepool for our finetuning which will use 8 L4 GPUs per VM.
 Create the `g2-standard-96` nodepool by running:
 ```bash
-gcloud container node-pools create g2-standard-96 --cluster l4-demo \
+gcloud container node-pools create g2-standard-96 --cluster $CLUSTER_NAME \
   --accelerator type=nvidia-l4,count=8,gpu-driver-version=latest \
   --machine-type g2-standard-96 \
   --ephemeral-storage-local-ssd=count=8 \
